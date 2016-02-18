@@ -5,10 +5,18 @@
     MyTodoMvc module
     应用程序主要应用模块
      */
-    var myApp = angular.module('app', []);
-
+    var myApp = angular.module('app', ['ngRoute']);
+    //路由配置
+    myApp.config(['$routeProvider', function($routeProvider) {
+        $routeProvider
+            .when('/:status?', {
+                controller: 'TodoController',
+                templateUrl: 'main_tmpl'
+            })
+            .otherwise({ redirectTo: '/' });
+    }]);
     //注册一个主要的控制器
-    myApp.controller('TodoController', ['$scope', '$location', function($scope, $location) {
+    myApp.controller('TodoController', ['$scope', '$routeParams', '$route', function($scope, $routeParams, $route) {
         //文本框需要一个模型
         $scope.text = '';
         //任务列表需要一个
@@ -81,27 +89,49 @@
         $scope.actions.save = function() {
             $scope.currentEditId = -1;
         };
-        //状态筛选
+        // //状态筛选
+        // $scope.selector = {};
+        // //点击事件不合适有Dom操作
+        // //让$location也有一个执行$location的数据成员
+        // $scope.$location = $location;
+        // //因为watch只能监视属于$scope的成员
+        // $scope.$watch('$location.path()', function(now, old) {
+        //     //拿到锚点值
+        //     //这样写就要求执行环境必须要有window对象
+        //     switch (now) {
+        //         case '/active':
+        //             $scope.selector = { completed: false };
+        //             break;
+        //         case '/completed':
+        //             $scope.selector = { completed: true };
+        //             break;
+        //         default:
+        //             $scope.selector = {};
+        //             break;
+        //     }
+        // });
+
+
+        //路由实现
         $scope.selector = {};
-        //点击事件不合适有Dom操作
-        //让$location也有一个执行$location的数据成员
-        $scope.$location = $location;
-        //因为watch只能监视属于$scope的成员
-        $scope.$watch('$location.path()', function(now, old) {
-            //拿到锚点值
-            //这样写就要求执行环境必须要有window对象
-            switch (now) {
-                case '/active':
-                    $scope.selector = { completed: false };
-                    break;
-                case '/completed':
-                    $scope.selector = { completed: true };
-                    break;
-                default:
-                    $scope.selector = {};
-                    break;
-            }
-        });
+        var status = $routeParams.status;
+        switch (status) {
+            case 'active':
+                $scope.selector = { completed: false };
+                break;
+            case 'completed':
+                $scope.selector = { completed: true };
+                break;
+            default:
+                $route.updateParams({ status: '' });
+                $scope.selector = {};
+                break;
+        }
+        //自定义比较函数  默认filter过滤器使用的是模糊匹配
+        $scope.equalCompare = function(source, target) {
+            return source === target;
+        }
+
 
     }]);
 
