@@ -2,7 +2,7 @@
  * @Author: sk
  * @Date:   2016-02-18 11:17:50
  * @Last Modified by:   sk
- * @Last Modified time: 2016-02-18 12:21:01
+ * @Last Modified time: 2016-02-18 15:31:33
  */
 (function(angular) {
     'use strict';
@@ -30,24 +30,28 @@
                 //获取文本框的值，加入数组中,数据列表是自动同步的
                 //参数校验  界面逻辑
                 if (!$scope.text) {
-                    return false;
+                    return;
                 }
                 MainService.actions.add($scope.text);
                 $scope.text = '';
             };
-            //$scope.actions.remove = MainService.actions.remove;//这种 不太安全
-            $scope.actions.remove = function(id) {
+            $scope.actions.remove = MainService.actions.remove; //这种 不太安全
+            /*$scope.actions.remove = function(id) {
                 //此处是界面逻辑
                 MainService.actions.remove(id);
-            }
+            }*/
             $scope.actions.clearCompleted = function() {
-                var newTodos = MainService.actions.clearCompleted();
+                var newTodos = MainService.actions.clearCompleted;
                 $scope.todos = newTodos;
             };
             //是否有已经完成的
             $scope.actions.existCompleted = MainService.actions.existCompleted;
+
             var now = true;
             $scope.actions.toggleAll = MainService.actions.toggleAll;
+            $scope.actions.toggle = function() {
+                MainService.save();
+            };
             $scope.currentEditId = -1;
             //界面逻辑
             //业务可以被重用
